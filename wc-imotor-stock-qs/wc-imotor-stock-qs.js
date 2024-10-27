@@ -62,15 +62,22 @@ class ImotorStockQs extends HTMLElement {
 
   populateMakeSelect(makeCounts) {
     const selectElement = document.getElementById('makeSelect');
-    // Clear existing options except for "Please select Make"
-    selectElement.innerHTML = '<option>Please select Make</option>';
+
+    // Clear existing options
+    selectElement.innerHTML = ''; // Start with an empty select
+
+    // Add "All Makes" option as default
+    const allMakesOption = document.createElement('option');
+    allMakesOption.value = 'all'; // Value for "All Makes"
+    allMakesOption.textContent = 'All Makes';
+    selectElement.appendChild(allMakesOption); // Add All Makes first
 
     // Create options for each unique make
     Object.keys(makeCounts).sort().forEach(make => {
       const option = document.createElement('option');
       option.value = make; // Set value to lowercase for case-insensitive matching
       option.textContent = `${make.charAt(0).toUpperCase() + make.slice(1)} (${makeCounts[make]})`; // Capitalize first letter
-      selectElement.appendChild(option);
+      selectElement.appendChild(option); // Append unique makes after All Makes
     });
 
     // Add event listener for selection change
@@ -90,10 +97,15 @@ class ImotorStockQs extends HTMLElement {
       fetch(url)
         .then(response => response.json())
         .then(data => {
-          // Filter data based on selected make
-          const filteredData = data.filter(stock =>
-            stock.make.toLowerCase() === selectedMake.toLowerCase()
-          );
+          let filteredData;
+          if (selectedMake === 'all' || selectedMake === '') {
+            filteredData = data; // Return all data if "All Makes" is selected
+          } else {
+            // Filter data based on selected make
+            filteredData = data.filter(stock =>
+              stock.make.toLowerCase() === selectedMake.toLowerCase()
+            );
+          }
           this.render(filteredData); // Render filtered data
         })
         .catch(error => this.render({
