@@ -24,11 +24,21 @@ class ImotorStockQs extends HTMLElement {
       try {
         const data = await this.fetchData(url);
 
+        // Extract unique makes and their counts
+        const makeCounts = {};
+        data.forEach(stock => {
+          const make = stock.make.toLowerCase();
+          makeCounts[make] = (makeCounts[make] || 0) + 1;
+        });
+
+        // Populate the select element with unique makes
+        this.populateMakeSelect(makeCounts);
+
         // Get make and model from query string
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        const makeFilter = urlParams.get('make'); // Get 'make' parameter
-        const modelFilter = urlParams.get('model'); // Get 'model' parameter
+        const makeFilter = urlParams.get('make');
+        const modelFilter = urlParams.get('model');
 
         // Filter data based on make and model
         const filteredData = data.filter(stock => {
@@ -47,6 +57,48 @@ class ImotorStockQs extends HTMLElement {
       this.render({
         message: 'Dealer ID not provided.'
       });
+    }
+  }
+
+  populateMakeSelect(makeCounts) {
+    const selectElement = document.getElementById('makeSelect');
+    // Clear existing options except for "Please select Make"
+    selectElement.innerHTML = '<option>Please select Make</option>';
+
+    // Create options for each unique make
+    Object.keys(makeCounts).sort().forEach(make => {
+      const option = document.createElement('option');
+      option.value = make; // Set value to lowercase for case-insensitive matching
+      option.textContent = `${make.charAt(0).toUpperCase() + make.slice(1)} (${makeCounts[make]})`; // Capitalize first letter
+      selectElement.appendChild(option);
+    });
+
+    // Add event listener for selection change
+    selectElement.addEventListener('change', (event) => {
+      const selectedMake = event.target.value;
+      this.filterByMake(selectedMake); // Call method to filter by selected make
+    });
+  }
+
+  filterByMake(selectedMake) {
+    const baseUrl = 'https://s3.ap-southeast-2.amazonaws.com/stock.publish';
+    const dealerId = this.getAttribute('dealer-id');
+
+    if (dealerId) {
+      const url = `${baseUrl}/dealer_${dealerId}/stock.json`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          // Filter data based on selected make
+          const filteredData = data.filter(stock =>
+            stock.make.toLowerCase() === selectedMake.toLowerCase()
+          );
+          this.render(filteredData); // Render filtered data
+        })
+        .catch(error => this.render({
+          message: error.message
+        }));
     }
   }
 

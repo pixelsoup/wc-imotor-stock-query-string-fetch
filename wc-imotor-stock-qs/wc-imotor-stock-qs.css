@@ -1,0 +1,61 @@
+:host {
+  --primaryCol: gray; /* Default color */
+}
+
+.numberOfStock {
+  color: var(--numberStockCol);
+}
+
+.stockItemsWrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+
+  @media (min-width: 500px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 800px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (min-width: 1000px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.stockItem {
+  background-color: white;
+  border: 1px solid #ddd;
+}
+
+.stockItemHeading {
+  font-size: 14px;
+  color: white;
+  background-color: var(--primaryCol); /* Use custom property */
+  margin-block: 0;
+  padding: 5px;
+}
+
+.stockItemImage {
+    display: block;
+    width: 100%;
+}
+
+.stockFeatures {
+  background-color: white;
+  padding: 10px;
+}
+
+.stockFeatureItem {
+  font-size: 12px;
+  margin-block: 0;
+}
+
+strong {
+  font-family: var(--fontBold);
+}
