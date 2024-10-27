@@ -1,58 +1,69 @@
 class ImotorStockQs extends HTMLElement {
-
   constructor() {
-    super(); // Call the parent constructor
-    this.attachShadow({ mode: 'open' }); // Create a shadow DOM
-
-    // Create a link element to load external CSS
+    super();
+    this.attachShadow({
+      mode: 'open'
+    });
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './wc-imotor-stock-qs/wc-imotor-stock-qs.css'); // Path to CSS file
-
-    // Append the link to the shadow root
+    link.setAttribute('href', './wc-imotor-stock-qs/wc-imotor-stock-qs.css');
     this.shadowRoot.appendChild(link);
   }
 
   static get observedAttributes() {
-    return ['dealer-id', 'primary-col']; // Observe 'dealer-id' and 'primary-col' attributes
+    return ['dealer-id', 'primary-col'];
   }
 
   async connectedCallback() {
     const baseUrl = 'https://s3.ap-southeast-2.amazonaws.com/stock.publish';
-    const dealerId = this.getAttribute('dealer-id'); // Get the dealer id from the attribute
+    const dealerId = this.getAttribute('dealer-id');
 
     if (dealerId) {
-      const url = `${baseUrl}/dealer_${dealerId}/stock.json`; // Construct the full URL
+      const url = `${baseUrl}/dealer_${dealerId}/stock.json`;
 
       try {
-        const data = await this.fetchData(url); // Fetch data using the constructed URL
-        this.render(data); // Render the fetched data
+        const data = await this.fetchData(url);
+
+        // Get make from query string
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const makeFilter = urlParams.get('make');
+
+        // Filter data based on make
+        const filteredData = makeFilter ?
+          data.filter(stock => stock.make.toLowerCase() === makeFilter.toLowerCase()) :
+          data;
+
+        this.render(filteredData);
       } catch (error) {
-        this.render({ message: error.message }); // Handle errors during fetch
+        this.render({
+          message: error.message
+        });
       }
     } else {
-      this.render({ message: 'Dealer ID not provided.' }); // Handle missing attribute
+      this.render({
+        message: 'Dealer ID not provided.'
+      });
     }
   }
 
   async fetchData(url) {
-    const response = await fetch(url); // Fetch data from the given URL
+    const response = await fetch(url);
     if (!response.ok) {
-      throw new Error('Network response was not ok'); // Handle errors
+      throw new Error('Network response was not ok');
     }
-    return await response.json(); // Return the JSON data
+    return await response.json();
   }
 
   render(data) {
-    // Clear existing items from previous fetches
     let stockItemsWrapper = this.shadowRoot.querySelector('.stockItemsWrapper');
 
     if (!stockItemsWrapper) {
       stockItemsWrapper = document.createElement('div');
       stockItemsWrapper.classList.add('stockItemsWrapper');
-      this.shadowRoot.appendChild(stockItemsWrapper); // Append new wrapper to shadow root
+      this.shadowRoot.appendChild(stockItemsWrapper);
     } else {
-      stockItemsWrapper.innerHTML = ''; // Clear previous content of stock items only
+      stockItemsWrapper.innerHTML = '';
     }
 
     let numberOfStockHeading = this.shadowRoot.querySelector('.number-of-stock');
@@ -60,7 +71,7 @@ class ImotorStockQs extends HTMLElement {
     if (!numberOfStockHeading) {
       numberOfStockHeading = document.createElement('h3');
       numberOfStockHeading.classList.add('number-of-stock');
-      this.shadowRoot.insertBefore(numberOfStockHeading, stockItemsWrapper); // Insert heading before the wrapper
+      this.shadowRoot.insertBefore(numberOfStockHeading, stockItemsWrapper);
     }
 
     const numberOfStock = Array.isArray(data) ? data.length : 0;
@@ -69,12 +80,12 @@ class ImotorStockQs extends HTMLElement {
     if (Array.isArray(data)) {
       data.forEach(stock => {
         const stockItemClone = this.createStockItem(stock);
-        stockItemsWrapper.appendChild(stockItemClone); // Append each stock item to the wrapper
+        stockItemsWrapper.appendChild(stockItemClone);
       });
     } else {
       const messageParagraph = document.createElement('p');
       messageParagraph.textContent = data.message;
-      stockItemsWrapper.appendChild(messageParagraph); // Append error message if no data available
+      stockItemsWrapper.appendChild(messageParagraph);
     }
   }
 
@@ -83,9 +94,9 @@ class ImotorStockQs extends HTMLElement {
     stockItem.classList.add('stockItem');
 
     const images = stock.images;
-    const imageSrc = (Array.isArray(images) && images.length > 0)
-                     ? images[0]
-                     : 'https://placehold.co/250x167/e1e1e1/bebebe?text=No%20Image&font=lato';
+    const imageSrc = (Array.isArray(images) && images.length > 0) ?
+      images[0] :
+      'https://placehold.co/250x167/e1e1e1/bebebe?text=No%20Image&font=lato';
 
     const heading = document.createElement('p');
     heading.classList.add('stockItemHeading');
@@ -99,13 +110,30 @@ class ImotorStockQs extends HTMLElement {
     const featuresDiv = document.createElement('div');
     featuresDiv.classList.add('stockFeatures');
 
-    const features = [
-      { label: 'Transmission', value: stock.transmission || 'N/A' },
-      { label: 'Body Type', value: stock.bodyType || 'N/A' },
-      { label: 'Color', value: stock.colour || 'N/A' },
-      { label: 'Kilometres', value: stock.odometer || 'N/A' },
-      { label: 'Engine', value: `${stock.size || 'N/A'} ${stock.sizeOption || ''}` },
-      { label: 'Stock №', value: stock.stockNumber || 'N/A' }
+    const features = [{
+        label: 'Transmission',
+        value: stock.transmission || 'N/A'
+      },
+      {
+        label: 'Body Type',
+        value: stock.bodyType || 'N/A'
+      },
+      {
+        label: 'Color',
+        value: stock.colour || 'N/A'
+      },
+      {
+        label: 'Kilometres',
+        value: stock.odometer || 'N/A'
+      },
+      {
+        label: 'Engine',
+        value: `${stock.size || 'N/A'} ${stock.sizeOption || ''}`
+      },
+      {
+        label: 'Stock №',
+        value: stock.stockNumber || 'N/A'
+      }
     ];
 
     features.forEach(feature => {
@@ -129,7 +157,6 @@ class ImotorStockQs extends HTMLElement {
     if (name === 'dealer-id' && newValue) {
       this.connectedCallback();
     } else if (name === 'primary-col') {
-      // Update the CSS custom property when primary-col changes
       this.style.setProperty('--primaryCol', newValue);
     }
   }
