@@ -4,10 +4,30 @@ class ImotorStockQs extends HTMLElement {
     this.attachShadow({
       mode: 'open'
     });
+
+    // Create a link element to load external CSS
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
     link.setAttribute('href', './wc-imotor-stock-qs/wc-imotor-stock-qs.css');
     this.shadowRoot.appendChild(link);
+
+    // Create label and select for Make
+    const label = document.createElement('label');
+    label.setAttribute('for', 'makeSelect');
+    label.textContent = 'Make:';
+
+    const select = document.createElement('select');
+    select.id = 'makeSelect';
+
+    // Add "All Makes" option as default
+    const allMakesOption = document.createElement('option');
+    allMakesOption.value = 'all';
+    allMakesOption.textContent = 'All Makes';
+    select.appendChild(allMakesOption); // Add All Makes first
+
+    // Append label and select to shadow root
+    this.shadowRoot.appendChild(label);
+    this.shadowRoot.appendChild(select);
   }
 
   static get observedAttributes() {
@@ -61,9 +81,9 @@ class ImotorStockQs extends HTMLElement {
   }
 
   populateMakeSelect(makeCounts) {
-    const selectElement = document.getElementById('makeSelect');
+    const selectElement = this.shadowRoot.getElementById('makeSelect');
 
-    // Clear existing options
+    // Clear existing options except for "All Makes"
     selectElement.innerHTML = ''; // Start with an empty select
 
     // Add "All Makes" option as default
@@ -161,7 +181,8 @@ class ImotorStockQs extends HTMLElement {
     stockItem.classList.add('stockItem');
 
     const images = stock.images;
-    const imageSrc = (Array.isArray(images) && images.length > 0) ?
+    const imageSrc =
+      Array.isArray(images) && images.length > 0 ?
       images[0] :
       'https://placehold.co/250x167/e1e1e1/bebebe?text=No%20Image&font=lato';
 
