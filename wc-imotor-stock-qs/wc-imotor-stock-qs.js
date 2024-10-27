@@ -24,15 +24,18 @@ class ImotorStockQs extends HTMLElement {
       try {
         const data = await this.fetchData(url);
 
-        // Get make from query string
+        // Get make and model from query string
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        const makeFilter = urlParams.get('make');
+        const makeFilter = urlParams.get('make'); // Get 'make' parameter
+        const modelFilter = urlParams.get('model'); // Get 'model' parameter
 
-        // Filter data based on make
-        const filteredData = makeFilter ?
-          data.filter(stock => stock.make.toLowerCase() === makeFilter.toLowerCase()) :
-          data;
+        // Filter data based on make and model
+        const filteredData = data.filter(stock => {
+          const makeMatches = !makeFilter || stock.make.toLowerCase() === makeFilter.toLowerCase();
+          const modelMatches = !modelFilter || stock.model.toLowerCase().includes(modelFilter.toLowerCase());
+          return makeMatches && modelMatches; // Both conditions must be true
+        });
 
         this.render(filteredData);
       } catch (error) {
