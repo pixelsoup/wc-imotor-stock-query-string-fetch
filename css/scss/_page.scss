@@ -1,0 +1,29 @@
+.pageHeadingWrapper {
+  padding-left: 20px;
+
+  *+* {
+    margin-top: 5px;
+  }
+}
+
+.pageHeading {
+  font-size: 30px;
+  margin: 0;
+}
+
+.pageHeadingList {
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.pageHeadingLink {
+  font-size: 16px;
+  text-decoration: none;
+  color: var(--blue);
+  display: block;
+}
+
+.wordCount {
+  font-size: 24px;
+  margin-block-start: 24px;
+}
