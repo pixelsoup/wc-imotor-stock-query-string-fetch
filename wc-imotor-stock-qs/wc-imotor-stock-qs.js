@@ -54,13 +54,16 @@ class ImotorStockQs extends HTMLElement {
         // Populate the select element with unique makes
         this.populateMakeSelect(makeCounts);
 
-        // Get make and model from query string
+        // Get make from query string
+        this.updateSelectFromQueryString();
+
+        // Get model from query string
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        const makeFilter = urlParams.get('make');
         const modelFilter = urlParams.get('model');
 
         // Filter data based on make and model
+        const makeFilter = this.shadowRoot.getElementById('makeSelect').value;
         const filteredData = data.filter(stock => {
           const makeMatches = !makeFilter || stock.make.toLowerCase() === makeFilter.toLowerCase();
           const modelMatches = !modelFilter || stock.model.toLowerCase().includes(modelFilter.toLowerCase());
@@ -111,6 +114,15 @@ class ImotorStockQs extends HTMLElement {
     const baseUrl = 'https://s3.ap-southeast-2.amazonaws.com/stock.publish';
     const dealerId = this.getAttribute('dealer-id');
 
+    // Update query string
+    const urlParams = new URLSearchParams(window.location.search);
+    if (selectedMake === 'all') {
+      urlParams.delete('make'); // Remove make from query if "All Makes" is selected
+    } else {
+      urlParams.set('make', selectedMake); // Set new make in query string
+    }
+    window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`); // Update URL without reloading
+
     if (dealerId) {
       const url = `${baseUrl}/dealer_${dealerId}/stock.json`;
 
@@ -131,6 +143,15 @@ class ImotorStockQs extends HTMLElement {
         .catch(error => this.render({
           message: error.message
         }));
+    }
+  }
+
+  updateSelectFromQueryString() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const makeFilter = urlParams.get('make');
+
+    if (makeFilter) {
+      this.shadowRoot.getElementById('makeSelect').value = makeFilter.toLowerCase();
     }
   }
 
