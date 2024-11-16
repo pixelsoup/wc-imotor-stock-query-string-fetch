@@ -1,0 +1,36 @@
+div.searchfield {
+  margin: -10px 30px;
+  padding: 0;
+  width: auto;
+}
+
+.inputfield {
+  padding-top: 10px;
+  font-family: Calibri;
+  font-size: 16px;
+  color: black;
+  text-align: left;
+  box-sizing: border-box;
+  width: 60%;
+  border: none;
+  border-bottom: 1px solid blacsk;
+  background: transparent;
+}
+
+.inputfield:focus {
+  outline: none;
+}
+
+.inputfield:focus::placeholder {
+  opacity: 0%;
+}
+
+.borderbtm {
+  border-bottom: 1px solid black;
+  width: 0px;
+  transition: width .25s ease-in-out;
+}
+
+.searchTransition {
+  width: 220px;
+}

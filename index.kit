@@ -1,17 +1,18 @@
-<!-- $title Stock Fetch Web Component -->
-<!-- $css nil -->
-<!-- $scripts <script type="module" src="./wc-imotor-stock-qs/wc-imotor-stock-qs.js"></script> -->
-<!-- @include includes/kit/header.kit  -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>iMotor Stock Search</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="./images/favicon.svg" />
+  <link rel="stylesheet" href="css/production.css">
+  <script type="module" src="./im-stock-search/im-stock-search.js"></script>
+</head>
+<body>
   <div class="containerPadded">
-    <h1>Fetch Stock Using Query String</h1>
-    <pre class="preHightlighted">
-      ?dealer-id=2343&primary-col=crimson&make=haval&model=h6
-    </pre>
-    <pre class="preHightlighted">
-      DealerIds: 2895 (0), 2893 (31), 2880 (42), 2833 (40), 2798 (15), 2794 (564), 2343 (858)
-      Colours: navy, darkblue, cornflowerblue, crimson, brown, goldenrod, darkseagreen
-    </pre>
-    <imotor-stock-qs dealer-id="" primary-col=""></imotor-stock-qs>
+    <h1>Stock Search</h1>
+    <im-stock-search></im-stock-search>
   </div>
-  <script src="./js/development.js"></script>
-<!-- @include includes/kit/footer.kit  -->
+</body>
+</html>

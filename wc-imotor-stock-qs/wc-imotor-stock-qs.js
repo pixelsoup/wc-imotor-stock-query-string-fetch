@@ -22,7 +22,7 @@ class ImotorStockQs extends HTMLElement {
     // Add "All Makes" option as default
     const allMakesOption = document.createElement('option');
     allMakesOption.value = 'all';
-    allMakesOption.textContent = 'All Makes';
+    allMakesOption.textContent = 'All';
     select.appendChild(allMakesOption); // Add All Makes first
 
     // Append label and select to shadow root
